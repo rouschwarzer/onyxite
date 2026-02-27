@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Primary */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  /* Secondary */
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  /* Tactical Theme vars */
+  --color-bg-deep: #020202;
+  --color-accent-tactical: #111111;
+  --color-accent-border: rgba(255, 255, 255, 0.1);
+  --color-glass: rgba(10, 10, 10, 0.85);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-tactical: var(--font-space-grotesk), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
+
+  --radius-xl: 20px;
+}
+
+@layer base {
+  :root {
+    --background: #020202;
+    --foreground: #efefef;
+
+    --card: #111111;
+    --card-foreground: #efefef;
+
+    --popover: #111111;
+    --popover-foreground: #efefef;
+
+    --primary: #efefef;
+    --primary-foreground: #020202;
+
+    --secondary: #222222;
+    --secondary-foreground: #efefef;
+
+    --muted: #222222;
+    --muted-foreground: #a3a3a3;
+
+    --accent: #222222;
+    --accent-foreground: #efefef;
+
+    --destructive: #ff3333;
+    --destructive-foreground: #efefef;
+
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.1);
+    --ring: rgba(255, 255, 255, 0.2);
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-inter);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Scrollbar Stealth */
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #222;
+  }
+}
+
+@layer components {
+  /* Anti-Design & Glassmorphism */
+  .glass-panel {
+    background: var(--color-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--color-accent-border);
+  }
+
+  .tactical-card {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .tactical-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.01);
+  }
+
+  .nav-segment {
+    transition: all 0.3s ease;
+    @apply relative;
+  }
+
+  .nav-segment.active::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: #fff;
+    box-shadow: 0 0 8px #fff;
+  }
+}
