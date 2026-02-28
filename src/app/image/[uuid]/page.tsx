@@ -92,6 +92,12 @@ export default async function ImagePage(props: {
         .from(tagsTable)
         .orderBy(tagsTable.name);
 
+    // Fetch All Available Artists for Editing
+    const allArtists = await db
+        .select({ name: artists.name })
+        .from(artists)
+        .orderBy(artists.name);
+
     // Parse metadata
     const parsedMeta = contentData.processedMetadata || {};
     const resolution = (parsedMeta as any).resolution || "UNKNOWN_RES";
@@ -112,6 +118,7 @@ export default async function ImagePage(props: {
             userRole={userRole}
             isSaved={isSaved}
             availableTags={allTags}
+            availableArtists={allArtists}
             fileData={{
                 id: contentData.id,
                 title: contentData.title,

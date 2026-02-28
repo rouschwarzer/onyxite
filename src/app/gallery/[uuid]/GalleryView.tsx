@@ -12,6 +12,7 @@ interface GalleryViewProps {
     userRole: string;
     isSaved: boolean;
     availableTags: { name: string }[];
+    availableArtists: { name: string }[];
     galleryData: {
         id: string;
         title: string;
@@ -35,6 +36,7 @@ export function GalleryView({
     userRole,
     isSaved,
     availableTags,
+    availableArtists,
     galleryData,
 }: GalleryViewProps) {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -248,6 +250,7 @@ export function GalleryView({
                     tags: galleryData.tags,
                 }}
                 availableTags={availableTags}
+                availableArtists={availableArtists}
             />
         </>
     );

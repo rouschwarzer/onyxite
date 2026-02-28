@@ -121,6 +121,12 @@ export default async function GalleryPage(props: {
         .from(tagsTable)
         .orderBy(tagsTable.name);
 
+    // Fetch All Available Artists for Editing
+    const allArtists = await db
+        .select({ name: artists.name })
+        .from(artists)
+        .orderBy(artists.name);
+
     const filesize = galleryData.sizeBytes
         ? `${(galleryData.sizeBytes / 1024 / 1024).toFixed(2)} MB`
         : "UNKNOWN_SIZE";
@@ -138,6 +144,7 @@ export default async function GalleryPage(props: {
             userRole={userRole}
             isSaved={isSaved}
             availableTags={allTags}
+            availableArtists={allArtists}
             galleryData={{
                 id: galleryData.id,
                 title: galleryData.title,

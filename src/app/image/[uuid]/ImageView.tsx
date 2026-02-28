@@ -9,6 +9,7 @@ interface ImageViewProps {
     userRole: string;
     isSaved: boolean;
     availableTags: { name: string }[];
+    availableArtists: { name: string }[];
     fileData: {
         id: string;
         title: string;
@@ -33,6 +34,7 @@ export function ImageView({
     userRole,
     isSaved,
     availableTags,
+    availableArtists,
     fileData,
 }: ImageViewProps) {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -142,6 +144,7 @@ export function ImageView({
                     tags: fileData.tags,
                 }}
                 availableTags={availableTags}
+                availableArtists={availableArtists}
             />
         </>
     );

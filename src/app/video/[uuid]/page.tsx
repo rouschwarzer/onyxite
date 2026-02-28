@@ -97,6 +97,12 @@ export default async function VideoPage(props: {
         .from(tagsTable)
         .orderBy(tagsTable.name);
 
+    // 6.5 Fetch All Artists for Editing
+    const allArtists = await db
+        .select({ name: artists.name })
+        .from(artists)
+        .orderBy(artists.name);
+
     // 7. Format metadata
     const filesize = contentData.sizeBytes
         ? `${(contentData.sizeBytes / 1024 / 1024).toFixed(2)} MB`
@@ -113,6 +119,7 @@ export default async function VideoPage(props: {
             userRole={userRole}
             isSaved={isSaved}
             availableTags={allTags}
+            availableArtists={allArtists}
             fileData={{
                 id: contentData.id,
                 title: contentData.title,

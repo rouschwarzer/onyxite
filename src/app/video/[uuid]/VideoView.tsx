@@ -28,6 +28,7 @@ interface VideoViewProps {
     };
     isSaved: boolean;
     availableTags: { name: string }[];
+    availableArtists: { name: string }[];
 }
 
 /**
@@ -40,6 +41,7 @@ export function VideoView({
     fileData,
     isSaved,
     availableTags,
+    availableArtists,
 }: VideoViewProps) {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -139,6 +141,7 @@ export function VideoView({
                     tags: fileData.tags,
                 }}
                 availableTags={availableTags}
+                availableArtists={availableArtists}
             />
         </>
     );

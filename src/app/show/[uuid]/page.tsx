@@ -151,11 +151,18 @@ export default async function ShowPage(props: {
         .from(tagsTable)
         .orderBy(tagsTable.name);
 
+    // Fetch All Available Artists for Editing
+    const allArtists = await db
+        .select({ name: artists.name })
+        .from(artists)
+        .orderBy(artists.name);
+
     return (
         <ShowView
             userRole={userRole}
             isSaved={isSaved}
             availableTags={allTags}
+            availableArtists={allArtists}
             showData={{
                 id: showData.id,
                 title: showData.title,

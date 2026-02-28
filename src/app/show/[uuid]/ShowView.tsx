@@ -12,6 +12,7 @@ interface ShowViewProps {
     userRole: string;
     isSaved: boolean;
     availableTags: { name: string }[];
+    availableArtists: { name: string }[];
     showData: {
         id: string;
         title: string;
@@ -34,6 +35,7 @@ export function ShowView({
     userRole,
     isSaved,
     availableTags,
+    availableArtists,
     showData,
 }: ShowViewProps) {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -161,6 +163,7 @@ export function ShowView({
                     tags: showData.tags,
                 }}
                 availableTags={availableTags}
+                availableArtists={availableArtists}
             />
         </>
     );

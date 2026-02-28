@@ -16,6 +16,7 @@ interface EditMetadataDrawerProps {
         tags: string[];
     };
     availableTags: { name: string }[];
+    availableArtists: { name: string }[];
 }
 
 /**
@@ -29,6 +30,7 @@ export function EditMetadataDrawer({
     contentId,
     initialData,
     availableTags,
+    availableArtists,
 }: EditMetadataDrawerProps) {
     const router = useRouter();
     const [title, setTitle] = useState(initialData.title);
@@ -121,7 +123,7 @@ export function EditMetadataDrawer({
                     />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                     <label className="block text-[10px] uppercase tracking-widest opacity-40 font-tactical text-white">
                         Creator_Artist_Identifier
                     </label>
@@ -132,6 +134,28 @@ export function EditMetadataDrawer({
                         className="w-full bg-white/5 border border-white/10 p-3 rounded text-sm font-tactical focus:border-white focus:outline-none transition-colors text-blue-400"
                         placeholder="Real_Artist_Name"
                     />
+
+                    {/* Artist Suggestions */}
+                    {artistName.trim().length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {availableArtists
+                                .filter(a =>
+                                    a.name.toLowerCase().includes(artistName.toLowerCase()) &&
+                                    a.name !== artistName
+                                )
+                                .slice(0, 5)
+                                .map((artist) => (
+                                    <button
+                                        key={artist.name}
+                                        type="button"
+                                        onClick={() => setArtistName(artist.name)}
+                                        className="px-2 py-1 text-[8px] font-tactical uppercase bg-white/5 border border-white/10 rounded hover:bg-white/10 transition-all text-white opacity-60 hover:opacity-100"
+                                    >
+                                        {artist.name}
+                                    </button>
+                                ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-2">
