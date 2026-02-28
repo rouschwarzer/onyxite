@@ -79,12 +79,12 @@ export default async function StreamsPage(props: {
             <Navigation userRole={userRole} />
 
             <main className="max-w-5xl mx-auto mt-32 px-4 relative z-0 pb-32">
-                <header className="mb-16 border-l-2 border-white/20 pl-6 flex justify-between items-end">
+                <header className="mb-16 border-l-2 border-white/20 pl-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                     <div>
                         <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30 text-white">
                             Full_Archive
                         </p>
-                        <h2 className="text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                        <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                             Stream_Database
                         </h2>
                     </div>

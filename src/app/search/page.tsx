@@ -166,15 +166,15 @@ export default async function SearchPage(props: {
             <Navigation userRole={userRole} />
 
             <main className="max-w-5xl mx-auto mt-32 px-4 relative z-0 pb-32">
-                <header className="mb-16 border-l-2 border-white/20 pl-6 flex justify-between items-end">
+                <header className="mb-16 border-l-2 border-white/20 pl-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                     <div>
                         <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30 text-white">
                             Search_Result
                         </p>
-                        <h2 className="text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                        <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                             {q ? `Query: ${q}` : "All_Assets"}
                             {(artistName || tagsParam) && (
-                                <div className="opacity-30 text-xl flex flex-col gap-1 mt-2">
+                                <div className="opacity-30 text-lg flex flex-col gap-1 mt-2">
                                     {artistName && <span>by @{artistName}</span>}
                                     {tagsParam && (
                                         <span className="text-[10px] tracking-widest uppercase italic">

@@ -68,13 +68,13 @@ export function AssetHeader({
     };
 
     return (
-        <div className="mb-6 flex justify-between items-end border-l-2 border-white/20 pl-6 cursor-default">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end border-l-2 border-white/20 pl-6 cursor-default gap-4">
             <div className="flex-1">
                 <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30">
                     {typeLabel}
                 </p>
                 <div className="flex items-center gap-4">
-                    <h2 className="text-3xl font-tactical font-bold tracking-tighter uppercase italic text-white leading-tight">
+                    <h2 className="text-2xl sm:text-3xl font-tactical font-bold tracking-tighter uppercase italic text-white leading-tight">
                         {title}
                     </h2>
                     <div className="flex gap-2">
@@ -105,7 +105,7 @@ export function AssetHeader({
                 </div>
             </div>
 
-            <div className="text-right">
+            <div className="text-left sm:text-right">
                 <Link
                     href={`/artist/${uploader}`}
                     className="block opacity-40 font-tactical text-[10px] uppercase tracking-widest hover:opacity-100 transition-opacity mb-1"

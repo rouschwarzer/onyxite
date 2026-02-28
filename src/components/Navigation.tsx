@@ -486,8 +486,10 @@ export function Navigation({ userRole }: NavigationProps) {
             {/* Search Overlay */}
             <div
                 className={cn(
-                    "fixed inset-0 z-[60] glass-panel flex flex-col p-6 transition-transform duration-500 ease-out",
-                    searchOpen ? "translate-y-0" : "translate-y-full"
+                    "fixed inset-0 z-[60] glass-panel flex flex-col p-6 transition-all duration-500 ease-out",
+                    searchOpen
+                        ? "translate-y-0 opacity-100 visible"
+                        : "translate-y-10 opacity-0 invisible"
                 )}
             >
                 <div className="flex justify-between items-start mb-12 relative z-10">
@@ -512,7 +514,7 @@ export function Navigation({ userRole }: NavigationProps) {
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             placeholder="CMD_EXPLORE..."
-                            className="w-full bg-transparent border-b-2 border-white/20 py-4 text-3xl md:text-5xl font-tactical focus:outline-none focus:border-white transition-all placeholder:opacity-10 uppercase text-white"
+                            className="w-full bg-transparent border-b-2 border-white/20 py-4 text-2xl sm:text-3xl md:text-5xl font-tactical focus:outline-none focus:border-white transition-all placeholder:opacity-10 uppercase text-white"
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -600,8 +602,10 @@ export function Navigation({ userRole }: NavigationProps) {
             {/* Upload Overlay */}
             <div
                 className={cn(
-                    "fixed inset-0 z-[60] glass-panel flex flex-col transition-transform duration-500 ease-out overflow-y-auto",
-                    uploadOpen ? "translate-y-0" : "translate-y-full"
+                    "fixed inset-0 z-[60] glass-panel flex flex-col transition-all duration-500 ease-out overflow-y-auto",
+                    uploadOpen
+                        ? "translate-y-0 opacity-100 visible"
+                        : "translate-y-10 opacity-0 invisible"
                 )}
             >
                 <div className="p-6 flex justify-between items-start sticky top-0 z-20 bg-bg-deep/80 backdrop-blur-md border-b border-white/5">
@@ -1055,118 +1059,120 @@ export function Navigation({ userRole }: NavigationProps) {
             </div>
 
             {/* Bottom Utility Strip */}
-            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[360px] z-50 px-4 pointer-events-auto">
-                <div className="flex items-stretch glass-panel overflow-hidden border border-white/20 shadow-2xl h-16 rounded-xl">
-                    <Link
-                        href="/"
-                        className={cn(
-                            "flex-1 flex flex-col items-center justify-center gap-1 nav-segment transition-colors",
-                            isActive("/") ? "active bg-white/5" : "hover:bg-white/5"
-                        )}
-                    >
-                        <Home
-                            className={cn(
-                                "w-[18px] h-[18px]",
-                                isActive("/") ? "opacity-100" : "opacity-40"
-                            )}
-                            strokeWidth={2}
-                        />
-                        <span
-                            className={cn(
-                                "text-[8px] font-tactical uppercase tracking-widest",
-                                isActive("/") ? "opacity-100" : "opacity-40"
-                            )}
-                        >
-                            Home
-                        </span>
-                    </Link>
-                    {userRole === "admin" ? (
+            <div className="fixed bottom-6 left-0 right-0 z-50 px-4 pointer-events-none flex justify-center">
+                <div className="w-full max-w-[360px] pointer-events-auto">
+                    <div className="flex items-stretch glass-panel overflow-hidden border border-white/20 shadow-2xl h-16 rounded-xl">
                         <Link
-                            href="/dashboard"
+                            href="/"
                             className={cn(
-                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 transition-colors",
-                                isActive("/dashboard") ? "active bg-white/5" : "hover:bg-white/5"
+                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment transition-colors",
+                                isActive("/") ? "active bg-white/5" : "hover:bg-white/5"
                             )}
                         >
-                            <LayoutDashboard
+                            <Home
                                 className={cn(
                                     "w-[18px] h-[18px]",
-                                    isActive("/dashboard") ? "opacity-100" : "opacity-40"
+                                    isActive("/") ? "opacity-100" : "opacity-40"
                                 )}
                                 strokeWidth={2}
                             />
                             <span
                                 className={cn(
                                     "text-[8px] font-tactical uppercase tracking-widest",
-                                    isActive("/dashboard") ? "opacity-100" : "opacity-40"
+                                    isActive("/") ? "opacity-100" : "opacity-40"
                                 )}
                             >
-                                Admin
+                                Home
                             </span>
                         </Link>
-                    ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 opacity-10 cursor-not-allowed">
-                            <PlusSquare className="w-[18px] h-[18px]" strokeWidth={2} />
-                            <span className="text-[8px] font-tactical uppercase tracking-widest">
-                                Feed
+                        {userRole === "admin" ? (
+                            <Link
+                                href="/dashboard"
+                                className={cn(
+                                    "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 transition-colors",
+                                    isActive("/dashboard") ? "active bg-white/5" : "hover:bg-white/5"
+                                )}
+                            >
+                                <LayoutDashboard
+                                    className={cn(
+                                        "w-[18px] h-[18px]",
+                                        isActive("/dashboard") ? "opacity-100" : "opacity-40"
+                                    )}
+                                    strokeWidth={2}
+                                />
+                                <span
+                                    className={cn(
+                                        "text-[8px] font-tactical uppercase tracking-widest",
+                                        isActive("/dashboard") ? "opacity-100" : "opacity-40"
+                                    )}
+                                >
+                                    Admin
+                                </span>
+                            </Link>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 opacity-10 cursor-not-allowed">
+                                <PlusSquare className="w-[18px] h-[18px]" strokeWidth={2} />
+                                <span className="text-[8px] font-tactical uppercase tracking-widest">
+                                    Feed
+                                </span>
+                            </div>
+                        )}
+                        <button
+                            onClick={() => {
+                                resetUploadForm();
+                                setUploadOpen(true);
+                            }}
+                            className="w-16 flex items-center justify-center bg-white text-black hover:bg-gray-200 transition-colors"
+                        >
+                            <PlusSquare className="w-6 h-6" strokeWidth={2.5} />
+                        </button>
+                        <Link
+                            href="/saved"
+                            className={cn(
+                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-x border-white/10 transition-colors",
+                                isActive("/saved") ? "active bg-white/5" : "hover:bg-white/5"
+                            )}
+                        >
+                            <Bookmark
+                                className={cn(
+                                    "w-[18px] h-[18px]",
+                                    isActive("/saved") ? "opacity-100" : "opacity-40"
+                                )}
+                                strokeWidth={2}
+                            />
+                            <span
+                                className={cn(
+                                    "text-[8px] font-tactical uppercase tracking-widest",
+                                    isActive("/saved") ? "opacity-100" : "opacity-40"
+                                )}
+                            >
+                                Save
                             </span>
-                        </div>
-                    )}
-                    <button
-                        onClick={() => {
-                            resetUploadForm();
-                            setUploadOpen(true);
-                        }}
-                        className="w-16 flex items-center justify-center bg-white text-black hover:bg-gray-200 transition-colors"
-                    >
-                        <PlusSquare className="w-6 h-6" strokeWidth={2.5} />
-                    </button>
-                    <Link
-                        href="/saved"
-                        className={cn(
-                            "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-x border-white/10 transition-colors",
-                            isActive("/saved") ? "active bg-white/5" : "hover:bg-white/5"
-                        )}
-                    >
-                        <Bookmark
+                        </Link>
+                        <Link
+                            href="/user"
                             className={cn(
-                                "w-[18px] h-[18px]",
-                                isActive("/saved") ? "opacity-100" : "opacity-40"
-                            )}
-                            strokeWidth={2}
-                        />
-                        <span
-                            className={cn(
-                                "text-[8px] font-tactical uppercase tracking-widest",
-                                isActive("/saved") ? "opacity-100" : "opacity-40"
+                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment transition-colors",
+                                isActive("/user") ? "active bg-white/5" : "hover:bg-white/5"
                             )}
                         >
-                            Save
-                        </span>
-                    </Link>
-                    <Link
-                        href="/user"
-                        className={cn(
-                            "flex-1 flex flex-col items-center justify-center gap-1 nav-segment transition-colors",
-                            isActive("/user") ? "active bg-white/5" : "hover:bg-white/5"
-                        )}
-                    >
-                        <User
-                            className={cn(
-                                "w-[18px] h-[18px]",
-                                isActive("/user") ? "opacity-100" : "opacity-40"
-                            )}
-                            strokeWidth={2}
-                        />
-                        <span
-                            className={cn(
-                                "text-[8px] font-tactical uppercase tracking-widest",
-                                isActive("/user") ? "opacity-100" : "opacity-40"
-                            )}
-                        >
-                            User
-                        </span>
-                    </Link>
+                            <User
+                                className={cn(
+                                    "w-[18px] h-[18px]",
+                                    isActive("/user") ? "opacity-100" : "opacity-40"
+                                )}
+                                strokeWidth={2}
+                            />
+                            <span
+                                className={cn(
+                                    "text-[8px] font-tactical uppercase tracking-widest",
+                                    isActive("/user") ? "opacity-100" : "opacity-40"
+                                )}
+                            >
+                                User
+                            </span>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </>

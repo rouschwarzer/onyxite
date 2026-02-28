@@ -196,12 +196,12 @@ export default async function Home() {
         {/* SECTION 01: STREAM_LIST (Individual Videos) */}
         {streamData.length > 0 && (
           <section className="max-w-3xl mx-auto">
-            <header className="mb-10 flex justify-between items-end border-l-2 border-white/20 pl-6">
+            <header className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end border-l-2 border-white/20 pl-6 gap-4">
               <div>
                 <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30">
                   Latest_Feed
                 </p>
-                <h2 className="text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                   Stream_List
                 </h2>
               </div>
@@ -235,12 +235,12 @@ export default async function Home() {
         {/* SECTION 02: VISUAL_GRID (Individual Images) */}
         {verticalData.length > 0 && (
           <section className="mt-48">
-            <header className="mb-10 flex justify-between items-end border-l-2 border-white/20 pl-6">
+            <header className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end border-l-2 border-white/20 pl-6 gap-4">
               <div>
                 <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30">
                   Static_Assets
                 </p>
-                <h2 className="text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                   Visual_Grid
                 </h2>
               </div>
@@ -272,12 +272,12 @@ export default async function Home() {
         {/* SECTION 03: MANGA_CORNER (Series / Comics / Galleries) */}
         {mangaData.length > 0 && (
           <section className="mt-48">
-            <header className="mb-10 flex justify-between items-end border-l-2 border-white/20 pl-6">
+            <header className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end border-l-2 border-white/20 pl-6 gap-4">
               <div>
                 <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30">
                   Serial_Archive
                 </p>
-                <h2 className="text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                   Manga_Corner
                 </h2>
               </div>
@@ -309,12 +309,12 @@ export default async function Home() {
         {/* SECTION 04: STREAM_CORNER (Shows / Video Series) */}
         {streamCornerData.length > 0 && (
           <section className="mt-48 max-w-3xl mx-auto">
-            <header className="mb-10 flex justify-between items-end border-l-2 border-white/20 pl-6">
+            <header className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end border-l-2 border-white/20 pl-6 gap-4">
               <div>
                 <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30">
                   Serial_Streams
                 </p>
-                <h2 className="text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                   Stream_Corner
                 </h2>
               </div>

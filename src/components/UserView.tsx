@@ -126,7 +126,7 @@ export function UserView({ user, uploads, pagination }: UserViewProps) {
                 {/* User Header */}
                 <header className="mb-16 glass-panel p-8 rounded-[20px] border border-white/20 relative overflow-hidden">
 
-                    <div className="flex flex-col md:flex-row gap-8 items-start md:items-center relative z-10">
+                    <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-center relative z-10 text-center sm:text-left">
                         <div className="w-24 h-24 rounded-full bg-neutral-900 border-2 border-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden relative group">
                             {user.avatarUrl ? (
                                 <img
@@ -143,9 +143,9 @@ export function UserView({ user, uploads, pagination }: UserViewProps) {
                                 </span>
                             </div>
                         </div>
-                        <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-2">
-                                <h1 className="text-4xl md:text-5xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                        <div className="flex-1 w-full sm:w-auto">
+                            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 mb-2">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                                     @{user.username}
                                 </h1>
                                 <span className="px-2 py-0.5 border border-emerald-500/50 text-emerald-400 text-[8px] font-tactical uppercase tracking-widest rounded flex items-center gap-1">
@@ -156,16 +156,16 @@ export function UserView({ user, uploads, pagination }: UserViewProps) {
                             <p className="font-tactical text-[10px] uppercase tracking-[0.2em] opacity-40 mb-4 text-white">
                                 System_Access // Active since: {user.joinedDate}
                             </p>
-                            <div className="flex gap-4">
+                            <div className="flex flex-wrap justify-center sm:justify-start gap-4">
                                 <button
                                     onClick={() => setIsDrawerOpen(true)}
-                                    className="px-4 py-2 bg-white/5 border border-white/10 text-[9px] font-tactical uppercase tracking-widest hover:bg-white/10 transition-colors rounded text-white"
+                                    className="px-4 py-2 bg-white/5 border border-white/10 text-[9px] font-tactical uppercase tracking-widest hover:bg-white/10 transition-colors rounded text-white min-w-[120px]"
                                 >
                                     Edit_Profile
                                 </button>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-tactical uppercase tracking-widest hover:bg-red-500/20 transition-colors rounded flex items-center gap-2"
+                                    className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-tactical uppercase tracking-widest hover:bg-red-500/20 transition-colors rounded flex items-center gap-2 min-w-[120px] justify-center"
                                 >
                                     <LogOut className="w-3 h-3" />
                                     Terminate_Session
@@ -177,16 +177,16 @@ export function UserView({ user, uploads, pagination }: UserViewProps) {
 
                 {/* Uploads Grid */}
                 <section>
-                    <div className="mb-8 flex justify-between items-end border-l-2 border-white/20 pl-6">
+                    <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end border-l-2 border-white/20 pl-6 gap-4">
                         <div>
                             <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30 text-white">
                                 Personal Archive
                             </p>
-                            <h2 className="text-2xl font-tactical font-bold tracking-tighter uppercase italic text-white">
+                            <h2 className="text-xl sm:text-2xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                                 My_Uploads
                             </h2>
                         </div>
-                        <div className="text-right opacity-20 font-tactical text-[8px] uppercase tracking-widest text-white">
+                        <div className="text-left sm:text-right opacity-20 font-tactical text-[8px] uppercase tracking-widest text-white">
                             Count: {pagination.totalCount}_Assets
                         </div>
                     </div>
@@ -279,7 +279,7 @@ export function UserView({ user, uploads, pagination }: UserViewProps) {
                 />
                 <div
                     className={cn(
-                        "absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#0a0a0a] border-l border-white/10 p-8 transition-transform duration-500 ease-out flex flex-col shadow-2xl overflow-y-auto",
+                        "absolute right-0 top-0 bottom-0 w-full sm:max-w-md bg-[#0a0a0a] border-l border-white/10 p-6 sm:p-8 transition-transform duration-500 ease-out flex flex-col shadow-2xl overflow-y-auto",
                         isDrawerOpen ? "translate-x-0" : "translate-x-full"
                     )}
                 >
