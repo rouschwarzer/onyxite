@@ -60,15 +60,11 @@ export default async function Home() {
       mimeType: files.mimeType,
       objectKey: files.objectKey,
       uploader: users.username,
-      artist: artists.name,
       processedMetadata: content.processedMetadata,
     })
     .from(content)
     .leftJoin(files, eq(content.fileId, files.id))
     .leftJoin(users, eq(content.uploaderId, users.id))
-    .leftJoin(contentArtists, eq(content.id, contentArtists.contentId))
-    .leftJoin(artists, eq(contentArtists.artistId, artists.id))
-
     .where(streamWhere)
     .orderBy(desc(content.createdAt))
     .limit(20);
@@ -116,15 +112,11 @@ export default async function Home() {
       mimeType: files.mimeType,
       objectKey: files.objectKey,
       uploader: users.username,
-      artist: artists.name,
       processedMetadata: content.processedMetadata,
     })
     .from(content)
     .leftJoin(files, eq(content.fileId, files.id))
     .leftJoin(users, eq(content.uploaderId, users.id))
-    .leftJoin(contentArtists, eq(content.id, contentArtists.contentId))
-    .leftJoin(artists, eq(contentArtists.artistId, artists.id))
-
     .where(streamCornerWhere)
     .orderBy(desc(content.createdAt))
     .limit(10);
@@ -133,13 +125,19 @@ export default async function Home() {
   const streamData = await Promise.all(
     streamQuery.map(async (f) => {
       const assets = await getVideoAssets(f.objectKey, f.processedMetadata);
+      const artistsResults = await db
+        .select({ name: artists.name })
+        .from(contentArtists)
+        .innerJoin(artists, eq(contentArtists.artistId, artists.id))
+        .where(eq(contentArtists.contentId, f.id));
+      const artistDisplay = artistsResults.length > 0 ? artistsResults.map(a => a.name).join(", ") : "Unknown Artist";
+
       return {
         id: f.id,
         title: f.title,
         thumbnailUrl: assets.poster || "/placeholder.png",
         previewUrl: assets.preview,
-        artist: f.artist || f.uploader || "Unknown",
-
+        artist: artistDisplay,
         type: f.mimeType?.startsWith("video") ? "Video" : f.category || "Video",
         res: "SRC",
         isSerial: false,
@@ -148,38 +146,63 @@ export default async function Home() {
   );
 
   const verticalData = await Promise.all(
-    verticalQuery.map(async (f) => ({
-      id: f.id,
-      title: f.title,
-      thumbnailUrl: await getFileUrl(f.objectKey || ""),
-      artist: f.uploader || "Unknown",
-      type: f.mimeType?.startsWith("image") ? "Image" : f.category || "Image",
-      res: "SRC",
-      isSerial: false,
-    }))
+    verticalQuery.map(async (f) => {
+      const artistsResults = await db
+        .select({ name: artists.name })
+        .from(contentArtists)
+        .innerJoin(artists, eq(contentArtists.artistId, artists.id))
+        .where(eq(contentArtists.contentId, f.id));
+      const artistDisplay = artistsResults.length > 0 ? artistsResults.map(a => a.name).join(", ") : "Unknown Artist";
+
+      return {
+        id: f.id,
+        title: f.title,
+        thumbnailUrl: await getFileUrl(f.objectKey || ""),
+        artist: artistDisplay,
+        type: f.mimeType?.startsWith("image") ? "Image" : f.category || "Image",
+        res: "SRC",
+        isSerial: false,
+      };
+    })
   );
 
   const mangaData = await Promise.all(
-    mangaQuery.map(async (f) => ({
-      id: f.id,
-      title: f.title,
-      thumbnailUrl: await getFileUrl(f.objectKey || ""),
-      artist: f.uploader || "Unknown",
-      type: f.category || "Series",
-      res: "SRC",
-      isSerial: true,
-    }))
+    mangaQuery.map(async (f) => {
+      const artistsResults = await db
+        .select({ name: artists.name })
+        .from(contentArtists)
+        .innerJoin(artists, eq(contentArtists.artistId, artists.id))
+        .where(eq(contentArtists.contentId, f.id));
+      const artistDisplay = artistsResults.length > 0 ? artistsResults.map(a => a.name).join(", ") : "Unknown Artist";
+
+      return {
+        id: f.id,
+        title: f.title,
+        thumbnailUrl: await getFileUrl(f.objectKey || ""),
+        artist: artistDisplay,
+        type: f.category || "Series",
+        res: "SRC",
+        isSerial: true,
+      };
+    })
   );
 
   const streamCornerData = await Promise.all(
     streamCornerQuery.map(async (f) => {
       const assets = await getVideoAssets(f.objectKey, f.processedMetadata);
+      const artistsResults = await db
+        .select({ name: artists.name })
+        .from(contentArtists)
+        .innerJoin(artists, eq(contentArtists.artistId, artists.id))
+        .where(eq(contentArtists.contentId, f.id));
+      const artistDisplay = artistsResults.length > 0 ? artistsResults.map(a => a.name).join(", ") : "Unknown Artist";
+
       return {
         id: f.id,
         title: f.title,
         thumbnailUrl: assets.poster || "/placeholder.png",
         previewUrl: assets.preview,
-        artist: f.uploader || "Unknown",
+        artist: artistDisplay,
         type: "Show",
         res: "SRC",
         isSerial: true,
@@ -205,11 +228,14 @@ export default async function Home() {
                   Stream_List
                 </h2>
               </div>
-              <Link href="/streams" className="flex items-center gap-2 group">
-                <span className="text-[8px] font-tactical uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity text-white">
+              <Link
+                href="/streams"
+                className="flex items-center gap-3 px-4 py-2 bg-white text-black hover:bg-white/90 rounded-lg transition-all group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
+              >
+                <span className="text-[10px] font-tactical font-bold uppercase tracking-[0.3em]">
                   View_All_Streams
                 </span>
-                <div className="w-8 h-px bg-white/20 group-hover:w-12 group-hover:bg-white transition-all"></div>
+                <div className="w-4 h-px bg-black/40 group-hover:w-6 group-hover:bg-black transition-all"></div>
               </Link>
             </header>
 
@@ -244,11 +270,14 @@ export default async function Home() {
                   Visual_Grid
                 </h2>
               </div>
-              <Link href="/visuals" className="flex items-center gap-2 group">
-                <span className="text-[8px] font-tactical uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity text-white">
+              <Link
+                href="/visuals"
+                className="flex items-center gap-3 px-4 py-2 bg-white text-black hover:bg-white/90 rounded-lg transition-all group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
+              >
+                <span className="text-[10px] font-tactical font-bold uppercase tracking-[0.3em]">
                   Explore_Gallery
                 </span>
-                <div className="w-8 h-px bg-white/20 group-hover:w-12 group-hover:bg-white transition-all"></div>
+                <div className="w-4 h-px bg-black/40 group-hover:w-6 group-hover:bg-black transition-all"></div>
               </Link>
             </header>
 
@@ -281,11 +310,14 @@ export default async function Home() {
                   Manga_Corner
                 </h2>
               </div>
-              <Link href="/visuals" className="flex items-center gap-2 group">
-                <span className="text-[8px] font-tactical uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity text-white">
+              <Link
+                href="/visuals"
+                className="flex items-center gap-3 px-4 py-2 bg-white text-black hover:bg-white/90 rounded-lg transition-all group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
+              >
+                <span className="text-[10px] font-tactical font-bold uppercase tracking-[0.3em]">
                   Browse_Series
                 </span>
-                <div className="w-8 h-px bg-white/20 group-hover:w-12 group-hover:bg-white transition-all"></div>
+                <div className="w-4 h-px bg-black/40 group-hover:w-6 group-hover:bg-black transition-all"></div>
               </Link>
             </header>
 
@@ -318,11 +350,14 @@ export default async function Home() {
                   Stream_Corner
                 </h2>
               </div>
-              <Link href="/streams" className="flex items-center gap-2 group">
-                <span className="text-[8px] font-tactical uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity text-white">
+              <Link
+                href="/streams"
+                className="flex items-center gap-3 px-4 py-2 bg-white text-black hover:bg-white/90 rounded-lg transition-all group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
+              >
+                <span className="text-[10px] font-tactical font-bold uppercase tracking-[0.3em]">
                   View_All_Shows
                 </span>
-                <div className="w-8 h-px bg-white/20 group-hover:w-12 group-hover:bg-white transition-all"></div>
+                <div className="w-4 h-px bg-black/40 group-hover:w-6 group-hover:bg-black transition-all"></div>
               </Link>
             </header>
 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X, Save, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { TagInput } from "./TagInput";
 
 interface EditMetadataDrawerProps {
     isOpen: boolean;
@@ -37,25 +38,7 @@ export function EditMetadataDrawer({
     const [description, setDescription] = useState(initialData.description || "");
     const [artistName, setArtistName] = useState(initialData.artistName || "");
     const [selectedTags, setSelectedTags] = useState<string[]>(initialData.tags);
-    const [newTag, setNewTag] = useState("");
     const [isSaving, setIsSaving] = useState(false);
-
-    const toggleTag = (tagName: string) => {
-        const normalizedTag = tagName.toLowerCase();
-        setSelectedTags((prev) =>
-            prev.includes(normalizedTag)
-                ? prev.filter((t) => t !== normalizedTag)
-                : [...prev, normalizedTag]
-        );
-    };
-
-    const handleAddTag = () => {
-        const tag = newTag.trim().toLowerCase();
-        if (tag && !selectedTags.includes(tag)) {
-            setSelectedTags((prev) => [...prev, tag]);
-        }
-        setNewTag("");
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -171,65 +154,14 @@ export function EditMetadataDrawer({
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label className="block text-[10px] uppercase tracking-widest opacity-40 font-tactical mb-3 text-white">
-                        Index_Tags // Linked: {selectedTags.length}
-                    </label>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {selectedTags.map((tag) => (
-                            <button
-                                key={tag}
-                                type="button"
-                                onClick={() => toggleTag(tag)}
-                                className="px-3 py-1 text-[9px] font-tactical uppercase bg-white text-black border border-white flex items-center gap-2 group"
-                            >
-                                {tag}
-                                <X className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100 transition-opacity" />
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="block text-[8px] uppercase tracking-widest opacity-20 font-tactical text-white">
-                            Available_Suggestions
-                        </label>
-                        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-2 scrollbar-hide py-1">
-                            {availableTags
-                                .filter((tag) => !selectedTags.includes(tag.name.toLowerCase()))
-                                .map((tag) => (
-                                    <button
-                                        key={tag.name}
-                                        type="button"
-                                        onClick={() => toggleTag(tag.name)}
-                                        className="px-3 py-1 text-[9px] font-tactical uppercase border border-white/10 opacity-40 hover:border-white/30 hover:opacity-100 transition-all text-white"
-                                    >
-                                        {tag.name}
-                                    </button>
-                                ))}
-                        </div>
-                    </div>
-                    <div className="pt-2 flex gap-2">
-                        <input
-                            type="text"
-                            value={newTag}
-                            onChange={(e) => setNewTag(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    handleAddTag();
-                                }
-                            }}
-                            placeholder="+ Add_New_Identifier"
-                            className="flex-1 bg-transparent border-b border-white/10 py-1 text-[10px] font-tactical focus:outline-none focus:border-white uppercase opacity-40 focus:opacity-100 text-white"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleAddTag}
-                            className="text-white opacity-40 hover:opacity-100 transition-opacity"
-                        >
-                            <Plus className="w-4 h-4" />
-                        </button>
-                    </div>
+                <div className="space-y-4">
+                    <TagInput
+                        label="Index_Tags"
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                        availableTags={availableTags}
+                        placeholder="+ Add_New_Identifier"
+                    />
                 </div>
 
                 <button

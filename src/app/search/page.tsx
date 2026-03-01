@@ -54,7 +54,11 @@ export default async function SearchPage(props: {
     }
 
     if (artistName) {
-        conditions.push(eq(users.username, artistName));
+        conditions.push(sql`EXISTS (
+            SELECT 1 FROM ${contentArtists} ca
+            JOIN ${artists} a ON ca.artist_id = a.id
+            WHERE ca.content_id = ${content.id} AND a.name = ${artistName}
+        )`);
     }
 
     if (tagsParam) {
@@ -108,15 +112,11 @@ export default async function SearchPage(props: {
             mimeType: files.mimeType,
             objectKey: files.objectKey,
             uploader: users.username,
-            artist: artists.name,
             processedMetadata: content.processedMetadata,
         })
         .from(content)
         .leftJoin(files, eq(content.fileId, files.id))
         .leftJoin(users, eq(content.uploaderId, users.id))
-        .leftJoin(contentArtists, eq(content.id, contentArtists.contentId))
-        .leftJoin(artists, eq(contentArtists.artistId, artists.id))
-
         .where(and(...conditions))
         .orderBy(desc(content.createdAt))
         .limit(ITEMS_PER_PAGE)
@@ -124,6 +124,17 @@ export default async function SearchPage(props: {
 
     const results = await Promise.all(
         resultsQuery.map(async (f) => {
+            // Fetch all artists for this content
+            const contentArtistsResults = await db
+                .select({ name: artists.name })
+                .from(contentArtists)
+                .innerJoin(artists, eq(contentArtists.artistId, artists.id))
+                .where(eq(contentArtists.contentId, f.id));
+
+            const artistDisplay = contentArtistsResults.length > 0
+                ? contentArtistsResults.map(a => a.name).join(", ")
+                : "Unknown Artist";
+
             const isVideo = f.mimeType?.startsWith("video") || f.category === "show";
             const assets = await getVideoAssets(f.objectKey, f.processedMetadata);
 
@@ -132,8 +143,7 @@ export default async function SearchPage(props: {
                 thumbnailUrl: assets.poster || assets.src || "/placeholder.png",
                 previewUrl: assets.preview,
                 uploader: f.uploader || "Unknown",
-                artist: f.artist || f.uploader || "Unknown",
-
+                artist: artistDisplay,
                 type: isVideo
                     ? "Video"
                     : f.mimeType?.startsWith("image")

@@ -15,8 +15,10 @@ import {
     FileVideo,
     Image as ImageIcon,
     Loader2,
+    Hash,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TagInput } from "./TagInput";
 
 interface NavigationProps {
     userRole?: string;
@@ -55,7 +57,9 @@ export function Navigation({ userRole }: NavigationProps) {
     const [availableTags, setAvailableTags] = useState<
         { id: string; name: string }[]
     >([]);
-    const [tagSearch, setTagSearch] = useState("");
+    const [availableArtists, setAvailableArtists] = useState<
+        { id: string; name: string }[]
+    >([]);
     const [mediaType, setMediaType] = useState<"video" | "image" | "all">("all");
 
     // Upload State
@@ -67,10 +71,10 @@ export function Navigation({ userRole }: NavigationProps) {
         "auto" | "image" | "video" | "series"
     >("auto");
     const [uploadArtist, setUploadArtist] = useState("");
+
     const [uploadVisibility, setUploadVisibility] = useState<
         "private" | "public"
     >("public");
-    const [uploadTagInput, setUploadTagInput] = useState("");
     const [uploadTags, setUploadTags] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
@@ -99,20 +103,18 @@ export function Navigation({ userRole }: NavigationProps) {
             .then((data) => setAvailableTags(Array.isArray(data) ? data : []))
             .catch((err) => console.error("Failed to load tags", err));
 
+        // Fetch Artists
+        fetch("/api/artists")
+            .then((res) => res.json())
+            .then((data) => setAvailableArtists(Array.isArray(data) ? data : []))
+            .catch((err) => console.error("Failed to load artists", err));
+
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
-
-    const toggleTag = (tagName: string) => {
-        setSelectedTags((prev) =>
-            prev.includes(tagName)
-                ? prev.filter((t) => t !== tagName)
-                : [...prev, tagName]
-        );
-    };
 
     const handleSearch = () => {
         const params = new URLSearchParams();
@@ -136,7 +138,6 @@ export function Navigation({ userRole }: NavigationProps) {
         setUploadCategory("auto");
         setUploadArtist("");
         setUploadVisibility("public");
-        setUploadTagInput("");
         setUploadTags([]);
         setUploadError("");
         setUploadSuccess(false);
@@ -262,21 +263,8 @@ export function Navigation({ userRole }: NavigationProps) {
         });
     }, []);
 
-    /** Adds a tag to the upload tag list */
-    const addUploadTag = useCallback(() => {
-        const tag = uploadTagInput.trim().toLowerCase();
-        if (tag && !uploadTags.includes(tag)) {
-            setUploadTags((prev) => [...prev, tag]);
-        }
-        setUploadTagInput("");
-    }, [uploadTagInput, uploadTags]);
 
-    /** Removes a tag from the upload tag list */
-    const removeUploadTag = useCallback((tagToRemove: string) => {
-        setUploadTags((prev) => prev.filter((t) => t !== tagToRemove));
-    }, []);
 
-    /** Uploads a single file to the API */
     const uploadSingleFile = async (
         file: File,
         opts: {
@@ -446,7 +434,7 @@ export function Navigation({ userRole }: NavigationProps) {
         <>
             {/* Top Navbar */}
             <nav className="fixed top-0 left-0 w-full z-50 pointer-events-none">
-                <div className="max-w-[1400px] mx-auto p-4 flex items-start justify-between">
+                <div className="w-full max-w-[1400px] mx-auto p-4 flex items-start justify-between">
                     <Link
                         href="/"
                         className={cn(
@@ -464,8 +452,8 @@ export function Navigation({ userRole }: NavigationProps) {
                                 System_v2.6.4
                             </span>
                         </div>
-                        <div className="h-6 w-px bg-white/10"></div>
-                        <div className="flex items-center gap-2">
+                        <div className="h-6 w-px bg-white/10 hidden sm:block"></div>
+                        <div className="hidden sm:flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
                             <span className="text-[8px] font-tactical opacity-60 uppercase">
                                 Encrypted
@@ -522,51 +510,44 @@ export function Navigation({ userRole }: NavigationProps) {
                             <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest">
                                 Artist_ID
                             </label>
-                            <input
-                                type="text"
-                                value={artist}
-                                onChange={(e) => setArtist(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                                placeholder="@"
-                                className="w-full bg-transparent border-b border-white/10 py-2 focus:outline-none focus:border-white font-tactical text-white"
-                            />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest">
-                                Tags // Active_Filters ({selectedTags.length})
-                            </label>
-                            <input
-                                type="text"
-                                value={tagSearch}
-                                onChange={(e) => setTagSearch(e.target.value)}
-                                placeholder="Search_Tags..."
-                                className="w-full bg-transparent border-b border-white/10 py-1 text-sm focus:outline-none focus:border-white font-tactical placeholder:opacity-20 uppercase mb-4 text-white"
-                            />
-                            <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto scrollbar-hide pr-2">
-                                {availableTags
-                                    .filter((t) =>
-                                        t.name.toLowerCase().includes(tagSearch.toLowerCase())
-                                    )
-                                    .map((tag) => (
-                                        <button
-                                            key={tag.id}
-                                            onClick={() => toggleTag(tag.name)}
-                                            className={cn(
-                                                "px-3 py-1 text-[9px] font-tactical uppercase border transition-all",
-                                                selectedTags.includes(tag.name)
-                                                    ? "bg-white text-black border-white"
-                                                    : "border-white/10 opacity-40 hover:opacity-100 hover:border-white/30 text-white"
-                                            )}
-                                        >
-                                            {tag.name}
-                                        </button>
-                                    ))}
-                                {availableTags.length === 0 && (
-                                    <span className="text-[8px] opacity-20 uppercase italic text-white">
-                                        No_System_Tags_Found
-                                    </span>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={artist}
+                                    onChange={(e) => setArtist(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                                    placeholder="@"
+                                    className="w-full bg-transparent border-b border-white/10 py-2 focus:outline-none focus:border-white font-tactical text-white"
+                                />
+                                {artist && !availableArtists.some(a => a.name.toLowerCase() === artist.toLowerCase()) && (
+                                    <div className="absolute z-10 w-full mt-1 bg-black border border-white/10 p-2 max-h-32 overflow-y-auto scrollbar-hide">
+                                        {availableArtists
+                                            .filter(a => a.name.toLowerCase().includes(artist.toLowerCase().replace("@", "")))
+                                            .map(a => (
+                                                <button
+                                                    key={a.id}
+                                                    onClick={() => {
+                                                        setArtist(a.name);
+                                                    }}
+                                                    className="w-full text-left px-2 py-1 text-[9px] uppercase font-tactical hover:bg-white hover:text-black transition-colors text-white"
+                                                >
+                                                    {a.name}
+                                                </button>
+                                            ))
+                                        }
+                                    </div>
                                 )}
                             </div>
+                        </div>
+                        <div className="space-y-4">
+                            <TagInput
+                                label="Tags"
+                                selectedTags={selectedTags}
+                                onTagsChange={setSelectedTags}
+                                availableTags={availableTags}
+                                placeholder="Search_Tags..."
+                                className="mt-4"
+                            />
                         </div>
                         <div className="space-y-4">
                             <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest">
@@ -947,54 +928,43 @@ export function Navigation({ userRole }: NavigationProps) {
                                     <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest text-white">
                                         Artist_Name
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={uploadArtist}
-                                        onChange={(e) => setUploadArtist(e.target.value)}
-                                        placeholder="@original_source..."
-                                        className="w-full bg-transparent border-b border-white/10 py-2 font-tactical focus:outline-none focus:border-white transition-all placeholder:opacity-10 text-white"
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={uploadArtist}
+                                            onChange={(e) => setUploadArtist(e.target.value)}
+                                            placeholder="@original_source..."
+                                            className="w-full bg-transparent border-b border-white/10 py-2 font-tactical focus:outline-none focus:border-white transition-all placeholder:opacity-10 text-white"
+                                        />
+                                        {uploadArtist && !availableArtists.some(a => a.name.toLowerCase() === uploadArtist.toLowerCase()) && (
+                                            <div className="absolute z-[70] w-full mt-1 bg-black border border-white/10 p-2 max-h-32 overflow-y-auto scrollbar-hide shadow-xl">
+                                                {availableArtists
+                                                    .filter(a => a.name.toLowerCase().includes(uploadArtist.toLowerCase().replace("@", "")))
+                                                    .map(a => (
+                                                        <button
+                                                            key={a.id}
+                                                            onClick={() => {
+                                                                setUploadArtist(a.name);
+                                                            }}
+                                                            className="w-full text-left px-2 py-1 text-[9px] uppercase font-tactical hover:bg-white hover:text-black transition-colors text-white"
+                                                        >
+                                                            {a.name}
+                                                        </button>
+                                                    ))
+                                                }
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest text-white">
-                                        Tags // ({uploadTags.length})
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={uploadTagInput}
-                                            onChange={(e) => setUploadTagInput(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
-                                                    addUploadTag();
-                                                }
-                                            }}
-                                            placeholder="Add_Tag..."
-                                            className="flex-1 bg-transparent border-b border-white/10 py-2 text-sm font-tactical focus:outline-none focus:border-white/30 transition-all placeholder:opacity-10 uppercase text-white"
-                                        />
-                                        <button
-                                            onClick={addUploadTag}
-                                            className="px-4 py-1 border border-white/10 text-[10px] font-tactical uppercase hover:border-white/30 transition-colors text-white"
-                                        >
-                                            Add
-                                        </button>
-                                    </div>
-                                    {uploadTags.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {uploadTags.map((tag) => (
-                                                <button
-                                                    key={tag}
-                                                    onClick={() => removeUploadTag(tag)}
-                                                    className="px-3 py-1 text-[9px] font-tactical uppercase bg-white text-black border border-white flex items-center gap-2 hover:bg-white/80 transition-colors"
-                                                >
-                                                    {tag}
-                                                    <X className="w-2.5 h-2.5" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <TagInput
+                                        label="Asset_Tags"
+                                        selectedTags={uploadTags}
+                                        onTagsChange={setUploadTags}
+                                        availableTags={availableTags}
+                                        placeholder="Add_Tag..."
+                                    />
                                 </div>
                             </div>
 
@@ -1085,7 +1055,42 @@ export function Navigation({ userRole }: NavigationProps) {
                                 Home
                             </span>
                         </Link>
-                        {userRole === "admin" ? (
+
+                        <button
+                            onClick={() => setSearchOpen(true)}
+                            className={cn(
+                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 transition-colors",
+                                searchOpen ? "active bg-white/5" : "hover:bg-white/5"
+                            )}
+                        >
+                            <Search
+                                className={cn(
+                                    "w-[18px] h-[18px]",
+                                    searchOpen ? "opacity-100" : "opacity-40"
+                                )}
+                                strokeWidth={2}
+                            />
+                            <span
+                                className={cn(
+                                    "text-[8px] font-tactical uppercase tracking-widest",
+                                    searchOpen ? "opacity-100" : "opacity-40"
+                                )}
+                            >
+                                Search
+                            </span>
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                resetUploadForm();
+                                setUploadOpen(true);
+                            }}
+                            className="w-14 flex items-center justify-center bg-white text-black hover:bg-gray-200 transition-colors"
+                        >
+                            <PlusSquare className="w-6 h-6" strokeWidth={2.5} />
+                        </button>
+
+                        {userRole === "admin" && (
                             <Link
                                 href="/dashboard"
                                 className={cn(
@@ -1109,27 +1114,12 @@ export function Navigation({ userRole }: NavigationProps) {
                                     Admin
                                 </span>
                             </Link>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 opacity-10 cursor-not-allowed">
-                                <PlusSquare className="w-[18px] h-[18px]" strokeWidth={2} />
-                                <span className="text-[8px] font-tactical uppercase tracking-widest">
-                                    Feed
-                                </span>
-                            </div>
                         )}
-                        <button
-                            onClick={() => {
-                                resetUploadForm();
-                                setUploadOpen(true);
-                            }}
-                            className="w-16 flex items-center justify-center bg-white text-black hover:bg-gray-200 transition-colors"
-                        >
-                            <PlusSquare className="w-6 h-6" strokeWidth={2.5} />
-                        </button>
+
                         <Link
                             href="/saved"
                             className={cn(
-                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-x border-white/10 transition-colors",
+                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 transition-colors",
                                 isActive("/saved") ? "active bg-white/5" : "hover:bg-white/5"
                             )}
                         >
@@ -1152,7 +1142,7 @@ export function Navigation({ userRole }: NavigationProps) {
                         <Link
                             href="/user"
                             className={cn(
-                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment transition-colors",
+                                "flex-1 flex flex-col items-center justify-center gap-1 nav-segment border-l border-white/10 transition-colors",
                                 isActive("/user") ? "active bg-white/5" : "hover:bg-white/5"
                             )}
                         >

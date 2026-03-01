@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { files, users, content } from "@/db/schema";
+import { files, content, artists, contentArtists } from "@/db/schema";
 import { eq, ne, desc, and, sql } from "drizzle-orm";
 import { getFileUrl } from "@/lib/r2";
 import { Navigation } from "@/components/Navigation";
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Artist profile page.
- * Displays all works uploaded by or associated with a specific artist/user.
+ * Displays all works associated with a specific artist from the artists table.
  * @param props - Component properties with params
  * @returns Artist page React component
  */
@@ -25,39 +25,53 @@ export default async function ArtistPage(props: {
 }) {
     const params = await props.params;
     const searchParams = await props.searchParams;
-    const name = params.name;
+    const name = decodeURIComponent(params.name);
     const pageParam = searchParams.page;
     const currentPage = pageParam ? Math.max(1, parseInt(pageParam)) : 1;
     const ITEMS_PER_PAGE = 24;
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-    // Fetch Artist Info from our users table (where creators are registered)
+    // Fetch Artist Info from our artists table
     const [artist] = await db
-        .select()
-        .from(users)
-        .where(eq(users.username, name))
+        .select({
+            id: artists.id,
+            name: artists.name,
+            bio: artists.bio,
+            createdAt: artists.createdAt,
+            avatarKey: files.objectKey
+        })
+        .from(artists)
+        .leftJoin(files, eq(artists.avatarFileId, files.id))
+        .where(eq(artists.name, name))
         .limit(1);
 
     if (!artist) {
         redirect("/404");
     }
 
+    const avatarUrl = artist.avatarKey ? await getFileUrl(artist.avatarKey) : null;
+
     const { data: session } = await auth.getSession();
     const userRole = session?.user?.role || "user";
 
-    // Base Conditions
+    // Base Conditions: Use junction table to find associated content
     const conditions = and(
-        eq(content.uploaderId, artist.id),
+        sql`EXISTS (
+            SELECT 1 FROM ${contentArtists} ca
+            WHERE ca.content_id = ${content.id} AND ca.artist_id = ${artist.id}
+        )`,
         ne(content.category, "SYSTEM"),
         ne(content.category, "thumbnail"),
-        eq(content.status, "active")
+        eq(content.status, "active"),
+        eq(content.visibility, "public")
     );
 
     // Fetch Total Count
-    const [{ count: totalCount }] = await db
+    const countResult = await db
         .select({ count: sql`count(*)`.mapWith(Number) })
         .from(content)
         .where(conditions);
+    const totalCount = countResult[0]?.count || 0;
 
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
 
@@ -84,7 +98,7 @@ export default async function ArtistPage(props: {
                 id: f.id,
                 title: f.title,
                 thumbnailUrl: await getFileUrl(f.objectKey || ""),
-                artist: artist.username,
+                artist: artist.name,
                 type: isVideo ? "Video" : f.category,
                 res: "SRC",
                 isVideo,
@@ -106,20 +120,20 @@ export default async function ArtistPage(props: {
                 <header className="mb-16 glass-panel p-8 rounded-xl border border-white/20 relative overflow-hidden">
 
                     <div className="flex flex-col md:flex-row gap-8 items-start md:items-center relative z-10">
-                        <div className="w-24 h-24 rounded-full bg-neutral-900 border-2 border-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                            {artist.avatarUrl ? (
+                        <div className="w-24 h-24 rounded-full bg-neutral-900 border-2 border-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden text-white">
+                            {avatarUrl ? (
                                 <img
-                                    src={artist.avatarUrl}
-                                    alt={artist.username}
+                                    src={avatarUrl}
+                                    alt={artist.name}
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
                                 <UserIcon className="w-8 h-8 opacity-20" />
                             )}
                         </div>
-                        <div>
+                        <div className="text-white">
                             <h1 className="text-4xl md:text-5xl font-tactical font-bold tracking-tighter uppercase italic mb-2">
-                                @{name}
+                                @{artist.name}
                             </h1>
                             <p className="font-tactical text-[10px] uppercase tracking-[0.2em] opacity-40 mb-4">
                                 Class: Creator // Initialized:{" "}
