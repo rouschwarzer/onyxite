@@ -178,13 +178,13 @@ export default async function SearchPage(props: {
             <main className="max-w-5xl mx-auto mt-32 px-4 relative z-0 pb-32">
                 <header className="mb-16 border-l-2 border-white/20 pl-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                     <div>
-                        <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-30 text-white">
+                        <p className="font-tactical text-[9px] uppercase tracking-[0.6em] mb-2 opacity-50 text-white">
                             Search_Result
                         </p>
                         <h2 className="text-3xl sm:text-4xl font-tactical font-bold tracking-tighter uppercase italic text-white">
                             {q ? `Query: ${q}` : "All_Assets"}
                             {(artistName || tagsParam) && (
-                                <div className="opacity-30 text-lg flex flex-col gap-1 mt-2">
+                                <div className="opacity-50 text-lg flex flex-col gap-1 mt-2">
                                     {artistName && <span>by @{artistName}</span>}
                                     {tagsParam && (
                                         <span className="text-[10px] tracking-widest uppercase italic">
@@ -195,7 +195,7 @@ export default async function SearchPage(props: {
                             )}
                         </h2>
                     </div>
-                    <div className="text-[8px] font-tactical uppercase tracking-widest opacity-20 text-white">
+                    <div className="text-[8px] font-tactical uppercase tracking-widest opacity-50 text-white">
                         Found: {totalResults}_Items
                     </div>
                 </header>
@@ -264,7 +264,7 @@ export default async function SearchPage(props: {
                         </div>
                     </>
                 ) : (
-                    <div className="py-40 text-center glass-panel rounded-2xl border border-dashed border-white/10 bg-black/20 text-white">
+                    <div className="py-40 text-center bg-background rounded-2xl border border-dashed border-white/20 text-white">
                         <p className="font-tactical text-xs uppercase tracking-[0.5em] opacity-20 mb-8">
                             No_Data_Matches_Query
                         </p>

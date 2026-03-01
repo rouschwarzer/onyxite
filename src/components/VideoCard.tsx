@@ -1,7 +1,9 @@
 "use client";
 
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Play } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VideoCardProps {
     id: string;
@@ -32,30 +34,61 @@ export function VideoCard({
     previewUrl,
 }: VideoCardProps) {
     const link = isSerial ? `/show/${id}` : `/video/${id}`;
+    const [isHovered, setIsHovered] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    // Track intersection to play on mobile scroll
+    useEffect(() => {
+        if (!previewUrl) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting && entry.intersectionRatio > 0.6);
+            },
+            { threshold: [0, 0.6, 1.0] }
+        );
+
+        if (cardRef.current) {
+            observer.observe(cardRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [previewUrl]);
+
+    // Handle playback state changes
+    useEffect(() => {
+        if (!videoRef.current) return;
+
+        const isMobile = "ontouchstart" in window;
+        const shouldPlay = isHovered || (isMobile && isVisible);
+
+        if (shouldPlay) {
+            videoRef.current.play().catch(() => { });
+        } else {
+            videoRef.current.pause();
+            if (!isMobile) {
+                videoRef.current.currentTime = 0;
+            }
+        }
+    }, [isHovered, isVisible]);
+
+    const showPreview = previewUrl && (isHovered || isVisible);
 
     return (
         <div
+            ref={cardRef}
             className="block group tactical-card p-4 rounded-[20px] animate-in fade-in fill-mode-both relative"
             style={{ animationDelay: `${delay}s`, animationDuration: "1s" }}
         >
             <Link
                 href={link}
                 className="block"
-                onMouseEnter={() => {
-                    const video = document.getElementById(`video-${id}`) as HTMLVideoElement;
-                    if (video) {
-                        video.play().catch(() => { });
-                    }
-                }}
-                onMouseLeave={() => {
-                    const video = document.getElementById(`video-${id}`) as HTMLVideoElement;
-                    if (video) {
-                        video.pause();
-                        video.currentTime = 0;
-                    }
-                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
-                <div className="aspect-video bg-[#0a0a0a] rounded-lg mb-6 relative group-hover:scale-[0.985] transition-transform duration-500 cursor-pointer overflow-hidden">
+                <div className="aspect-video bg-[#0a0a0a] rounded-lg mb-6 relative transition-transform duration-500 cursor-pointer overflow-hidden group-hover:scale-[0.985]">
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 z-10"></div>
 
                     <div className="absolute top-4 right-4 bg-black/60 backdrop-blur px-2 py-1 rounded border border-white/10 z-20">
@@ -67,18 +100,24 @@ export function VideoCard({
                     {previewUrl ? (
                         <div className="absolute inset-0 z-0">
                             <video
-                                id={`video-${id}`}
+                                ref={videoRef}
                                 src={previewUrl}
                                 muted
                                 loop
                                 playsInline
                                 preload="metadata"
-                                className="w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                className={cn(
+                                    "w-full h-full object-cover transition-opacity duration-300",
+                                    showPreview ? "opacity-100" : "opacity-0"
+                                )}
                             />
                             <img
                                 src={thumbnailUrl}
                                 alt={title}
-                                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-0 transition-opacity duration-300"
+                                className={cn(
+                                    "absolute inset-0 w-full h-full object-cover transition-opacity duration-300",
+                                    showPreview ? "opacity-0" : "opacity-80"
+                                )}
                             />
                         </div>
                     ) : thumbnailUrl ? (
@@ -92,10 +131,21 @@ export function VideoCard({
                             MEDIA_PLACEHOLDER
                         </div>
                     )}
+
                     <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
-                        <div className="w-1 h-1 bg-white rounded-full"></div>
-                        <span className="text-[8px] font-tactical uppercase tracking-widest opacity-40 italic text-white">
-                            {previewUrl ? "Preview_Ready" : "Buffer_Sync_Complete"}
+                        <div className={cn(
+                            "w-1 h-1 rounded-full transition-all duration-300",
+                            showPreview ? "bg-emerald-500 animate-pulse scale-125" : "bg-white"
+                        )}></div>
+                        <span className="text-[8px] font-tactical uppercase tracking-widest opacity-40 italic text-white flex items-center gap-2">
+                            {showPreview ? (
+                                <>
+                                    <Play className="w-2 h-2 fill-current" />
+                                    SYNC_PREVIEW_ACTIVE
+                                </>
+                            ) : (
+                                "Buffer_Sync_Complete"
+                            )}
                         </span>
                     </div>
                 </div>
@@ -120,3 +170,4 @@ export function VideoCard({
         </div>
     );
 }
+

@@ -474,14 +474,14 @@ export function Navigation({ userRole }: NavigationProps) {
             {/* Search Overlay */}
             <div
                 className={cn(
-                    "fixed inset-0 z-[60] glass-panel flex flex-col p-6 transition-all duration-500 ease-out",
+                    "fixed inset-0 z-[60] bg-background border border-white/10 flex flex-col p-6 transition-all duration-500 ease-out",
                     searchOpen
                         ? "translate-y-0 opacity-100 visible"
                         : "translate-y-10 opacity-0 invisible"
                 )}
             >
                 <div className="flex justify-between items-start mb-12 relative z-10">
-                    <span className="font-tactical text-xs tracking-[0.3em] uppercase opacity-50">
+                    <span className="font-tactical text-xs tracking-[0.3em] uppercase opacity-70">
                         Filter_Engine
                     </span>
                     <button
@@ -493,7 +493,7 @@ export function Navigation({ userRole }: NavigationProps) {
                 </div>
                 <div className="max-w-4xl mx-auto w-full space-y-12 relative z-10">
                     <div className="space-y-4">
-                        <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest">
+                        <label className="text-[10px] uppercase opacity-60 font-tactical tracking-widest">
                             Master Query
                         </label>
                         <input
@@ -502,12 +502,12 @@ export function Navigation({ userRole }: NavigationProps) {
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             placeholder="CMD_EXPLORE..."
-                            className="w-full bg-transparent border-b-2 border-white/20 py-4 text-2xl sm:text-3xl md:text-5xl font-tactical focus:outline-none focus:border-white transition-all placeholder:opacity-10 uppercase text-white"
+                            className="w-full bg-transparent border-b-2 border-white/40 py-4 text-2xl sm:text-3xl md:text-5xl font-tactical focus:outline-none focus:border-white transition-all placeholder:opacity-30 uppercase text-white"
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-4">
-                            <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest">
+                            <label className="text-[10px] uppercase opacity-60 font-tactical tracking-widest">
                                 Artist_ID
                             </label>
                             <div className="relative">
@@ -550,7 +550,7 @@ export function Navigation({ userRole }: NavigationProps) {
                             />
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest">
+                            <label className="text-[10px] uppercase opacity-60 font-tactical tracking-widest">
                                 Media_Type
                             </label>
                             <div className="flex gap-2">
@@ -573,7 +573,7 @@ export function Navigation({ userRole }: NavigationProps) {
                     </div>
                     <button
                         onClick={handleSearch}
-                        className="w-full py-6 border border-white font-tactical uppercase tracking-[0.5em] text-sm hover:bg-white hover:text-black transition-all text-white hover:text-black"
+                        className="w-full py-6 border border-white font-tactical uppercase tracking-[0.5em] text-sm hover:bg-white text-black bg-white transition-all"
                     >
                         Submit_Query
                     </button>

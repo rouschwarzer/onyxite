@@ -94,7 +94,7 @@ export function TagInput({
     return (
         <div className={cn("space-y-3", className)} ref={containerRef}>
             {label && (
-                <label className="text-[10px] uppercase opacity-40 font-tactical tracking-widest block text-white">
+                <label className="text-[10px] uppercase opacity-60 font-tactical tracking-widest block text-white">
                     {label} // {selectedTags.length}
                 </label>
             )}
@@ -137,7 +137,7 @@ export function TagInput({
 
                 {/* Suggestions Dropdown */}
                 {isFocused && (inputValue.length > 0 || suggestions.length > 0) && (
-                    <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-black/90 backdrop-blur-xl border border-white/10 rounded overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-black border border-white/10 rounded overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200">
                         {suggestions.length > 0 ? (
                             <div className="py-1">
                                 {suggestions.map((tag, index) => (
