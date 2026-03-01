@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { content, files, contentTags, users, tags as tagsTable, contentStats, artists, contentArtists } from "@/db/schema";
 
-import { eq, ne, or, desc, like, isNull, and, sql } from "drizzle-orm";
+import { eq, ne, or, desc, like, ilike, isNull, and, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { getFileUrl, getVideoAssets } from "@/lib/r2";
 import { Navigation } from "@/components/Navigation";
@@ -49,7 +49,7 @@ export default async function SearchPage(props: {
 
     if (q) {
         conditions.push(
-            or(like(content.name, `%${q}%`), like(content.description, `%${q}%`))!
+            or(ilike(content.name, `%${q}%`), ilike(content.description, `%${q}%`))!
         );
     }
 
@@ -57,7 +57,7 @@ export default async function SearchPage(props: {
         conditions.push(sql`EXISTS (
             SELECT 1 FROM ${contentArtists} ca
             JOIN ${artists} a ON ca.artist_id = a.id
-            WHERE ca.content_id = ${content.id} AND a.name = ${artistName}
+            WHERE ca.content_id = ${content.id} AND a.name ILIKE ${artistName}
         )`);
     }
 
